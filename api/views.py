@@ -11,6 +11,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 import json
 
+from .serializers import UserPortfolioSerializer
+from .models import UserPortfolio
 # Create your views here.
 
 
@@ -53,3 +55,11 @@ def testEndPoint(request):
         except json.JSONDecodeError:
             return Response("Invalid JSON data", status.HTTP_400_BAD_REQUEST)
     return Response("Invalid JSON data", status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getUserPortfolio(request):
+    user = request.user
+    portfolio = user.portfolio_set.all()
+    serializer = UserPortfolioSerializer(portfolio, many=True)
+    return Response(serializer.data)
